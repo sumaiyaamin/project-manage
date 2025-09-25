@@ -1,9 +1,83 @@
-# Project Management Tool
+# Project Management System
 
-A collaborative project management tool built with NestJS, TypeScript, PostgreSQL, Redis, and more.
+A robust and scalable project management system built with NestJS, TypeScript, and modern web technologies. This system provides comprehensive project and task management capabilities with role-based access control, real-time updates, and advanced features for team collaboration.
+
+## Project Overview
+
+This enterprise-grade project management system is designed to help teams organize, track, and manage projects efficiently. It features a modular architecture, secure authentication, and comprehensive API support for both REST and GraphQL.
+
+### Key Features
+
+- 🔐 **Authentication & Authorization**
+  - JWT-based authentication
+  - Role-based access control (Admin, Manager, Member, Viewer)
+  - Secure password hashing with bcrypt
+
+- 📊 **Project Management**
+  - Create and manage multiple projects
+  - Assign project owners and team members
+  - Track project status, budget, and timelines
+  - Project metadata and tagging support
+
+- ✅ **Task Management**
+  - Hierarchical task organization
+  - Task dependencies management
+  - Priority and status tracking
+  - Time tracking (estimated vs. actual hours)
+  - Task assignments and labels
+
+- 🚀 **Advanced Features**
+  - Real-time updates via WebSocket
+  - Full-text search with Elasticsearch
+  - Redis caching for improved performance
+  - Message queuing with RabbitMQ
+  - GraphQL API support
+  - Comprehensive REST API with Swagger documentation
 
 ## Architecture Overview
 
+### System Architecture Diagram
+
+```mermaid
+graph TB
+    Client[Client Applications] --> API[API Gateway/Load Balancer]
+    
+    subgraph NestJS Application
+        API --> Auth[Auth Module]
+        API --> Projects[Projects Module]
+        API --> Tasks[Tasks Module]
+        API --> Users[Users Module]
+        
+        Auth --> |Validates| Users
+        Projects --> |Manages| Tasks
+        Projects --> |Assigns| Users
+        Tasks --> |Assigns to| Users
+    end
+    
+    subgraph Data Layer
+        Auth --> |Verifies| DB[(PostgreSQL)]
+        Projects --> |Stores| DB
+        Tasks --> |Stores| DB
+        Users --> |Stores| DB
+        
+        Auth --> |Caches| Redis[(Redis Cache)]
+        Projects --> |Caches| Redis
+        Tasks --> |Caches| Redis
+        
+        Projects --> |Indexes| ES[(Elasticsearch)]
+        Tasks --> |Indexes| ES
+    end
+    
+    subgraph Message Broker
+        Projects --> |Events| RMQ[RabbitMQ]
+        Tasks --> |Events| RMQ
+        RMQ --> |Notifications| WS[WebSocket Server]
+        WS --> |Real-time Updates| Client
+    end
+
+```
+
+### Project Structure
 ```
 project-manage/
 ├── src/
